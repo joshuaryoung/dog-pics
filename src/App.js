@@ -9,7 +9,7 @@ import LoadingOverlay from './components/LoadingOverlay'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:5142/graphql/',
+  uri: process.env.REACT_APP_GRAPHQL_URI,
   cache: new InMemoryCache(),
 });
 
