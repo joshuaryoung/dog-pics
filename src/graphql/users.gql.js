@@ -5,7 +5,13 @@ export const UsersQuery = gql`
     userById(idIn: $idIn) {
       firstName
       lastName
-      dogs
+      dogs {
+        id
+        avatarUrl
+        breed {
+          name
+        }
+      }
       avatarUrl
     }
   }
