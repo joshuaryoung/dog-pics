@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Dialog } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
 import { Image } from 'mui-image'
+import { useMutation } from '@apollo/client'
+import { AddDogMutation } from '../graphql/dogs.gql'
 
 function Dogs() {
+  const [addDog] = useMutation(AddDogMutation)
   const [dogsData, setDogsData] = useState()
   const [showDialog, setshowDialog] = useState(false)
+  const [selectedDog, setSelectedDog] = useState(false)
 
   useEffect(() => {fetchDogs()}, [])
 
@@ -25,9 +29,23 @@ function Dogs() {
   }
 
   const handleDogImgClicked = i => {
-    const clickedDog = dogsData[i]
+    if (!dogsData[i]) {
+      console.warn(`dogsData[i] is ${dogsData[i]}`)
+      return
+    }
+
+    setSelectedDog(dogsData[i])
     setshowDialog(true)
-    console.log('TODO: Make a modal with actions', { clickedDog })
+  }
+
+  const handleSaveDogClicked = async e => {
+    const dogIn = {
+      id: selectedDog.id,
+      breed: selectedDog.breed,
+      avatarUrl: selectedDog.url
+    }
+    await addDog({ variables: { dogIn, userIdIn: 1000 } })
+    setshowDialog(false)
   }
 
   return (
@@ -51,7 +69,15 @@ function Dogs() {
       <Dialog
         open={showDialog}
         onClose={e => setshowDialog(false)}
-      />
+      >
+        <DialogTitle>
+          Save to Profile?
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleSaveDogClicked}>Save</Button>
+          <Button onClick={e => setshowDialog(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

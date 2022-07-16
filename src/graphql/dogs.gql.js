@@ -11,3 +11,9 @@ query DogsQuery {
   }
 }
 `
+
+export const AddDogMutation = gql`
+  mutation addDog($userIdIn: Int!, $dogIn: DogInput!) {
+    addDogToDbAndUserList(userIdIn: $userIdIn, dogIn: $dogIn)
+  }
+`

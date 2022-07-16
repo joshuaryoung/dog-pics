@@ -6,7 +6,7 @@ import { Image } from 'mui-image'
 
 function App() {
   const { userId } = useParams()
-  const { data: userData } = useQuery(UsersQuery, { variables: { idIn: parseInt(userId) }})
+  const { data: userData } = useQuery(UsersQuery, { variables: { idIn: parseInt(userId) }, fetchPolicy: 'network-only'})
 
   return (
     <div>
