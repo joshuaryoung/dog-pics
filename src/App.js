@@ -7,6 +7,7 @@ import Dogs from './views/Dogs'
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import LoadingOverlay from './components/LoadingOverlay'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Container } from '@mui/system';
 
 const client = new ApolloClient({
   uri: process.env.REACT_APP_GRAPHQL_URI,
@@ -29,14 +30,18 @@ function App() {
     <ApolloProvider client={client}>
       <React.StrictMode>
         <BrowserRouter>
-          <LoadingOverlay showLoadingOverlay={showLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} />
-          <Nav />
-          <Routes>
-            <Route index path="/" element={<Home />} />
-            <Route path="/users/:userId" element={<Users />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/dogs" element={<Dogs handleOpenLoadingOverlay={handleOpenLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} />} />
-          </Routes>
+          <div className='dogs-app'>
+            <LoadingOverlay showLoadingOverlay={showLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} />
+            <Nav />
+            <Container maxWidth="xl">
+              <Routes>
+                <Route index path="/" element={<Home />} />
+                <Route path="/users/:userId" element={<Users />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/dogs" element={<Dogs handleOpenLoadingOverlay={handleOpenLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} />} />
+              </Routes>
+            </Container>
+          </div>
         </BrowserRouter>
       </React.StrictMode>
     </ApolloProvider>

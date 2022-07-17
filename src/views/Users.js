@@ -13,7 +13,9 @@ function App() {
       {userData && userData.userById && 
       <div>
         <div>{`${userData.userById.firstName} ${userData.userById.lastName}`}</div>
-        <Image src={userData.userById.avatarUrl} height="200px" width="200px" fit="contain"/>
+        <div>
+          <Image src={userData.userById.avatarUrl} height="200px" width="329px" fit="cover"/>
+        </div>
       </div>
       }
       <div>Saved Dogs</div>

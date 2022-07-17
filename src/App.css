@@ -40,7 +40,7 @@
 #dog-container {
   display: flex;
   flex-wrap: wrap;
-  height: 90vh;
+  height: 76vh;
   justify-content: space-evenly;
   align-items: center;
 }
@@ -59,4 +59,23 @@
 
 #loading-overlay.fade-out {
   opacity: 0;
+}
+
+.dogs-app-bar {
+  background-color: #5c668b !important;
+}
+
+.dogs-app {
+  background-color: #2e2e2e !important;
+  color: white !important;
+  height: 100vh;
+  width: 100vw;
+}
+
+.dog-refresh-button {
+  background-color: #5c668b !important;
+}
+
+#saved-dogs-container {
+  display: flex;
 }

@@ -18,7 +18,7 @@ function Dogs() {
 
   const fetchDogs = () => {
     try {
-      fetch('https://api.thedogapi.com/v1/images/search?limit=10&order=Desc')
+      fetch('https://api.thedogapi.com/v1/images/search?limit=12&order=Desc')
       .then(res => res.json())
       .then(data => {
         setDogsData(data)
@@ -50,7 +50,7 @@ function Dogs() {
 
   return (
     <div>
-      <button onClick={handleRefreshClick}>Refresh</button>
+      <Button variant="contained" className="dog-refresh-button" style={{marginTop: '20px'}} onClick={handleRefreshClick}>Refresh</Button>
       <div id="dog-container">
         { dogsData && dogsData.map((dog, i) => (
         <div className="dog-pic-div" key={dog.id}>

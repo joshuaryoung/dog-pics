@@ -17,7 +17,7 @@ function App() {
   } 
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" className="dogs-app-bar">
       <Toolbar>
         <IconButton
           size="large"
@@ -47,7 +47,7 @@ function App() {
           <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
         </Menu>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Website
+          Dog Connoisseur
         </Typography>
         <Button color="inherit">Login</Button>
       </Toolbar>
