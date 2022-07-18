@@ -3,14 +3,22 @@ import { Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
 import { Image } from 'mui-image'
 import { useMutation } from '@apollo/client'
 import { AddDogMutation } from '../graphql/dogs.gql'
+import { useTheme } from '@mui/system'
+import { LoadingButton } from '@mui/lab'
 
 function Dogs() {
-  const [addDog] = useMutation(AddDogMutation)
+  const theme = useTheme()
+  const [addDog, { called, loading, error }] = useMutation(AddDogMutation)
   const [dogsData, setDogsData] = useState()
   const [showDialog, setshowDialog] = useState(false)
   const [selectedDog, setSelectedDog] = useState(false)
 
   useEffect(() => {fetchDogs()}, [])
+  useEffect(() => { if (called) afterMutationCalled() }, [called])
+
+  const afterMutationCalled = () => {
+    console.log('here')
+  }
 
   const handleRefreshClick = e => {
     fetchDogs()
@@ -50,7 +58,7 @@ function Dogs() {
 
   return (
     <div>
-      <Button variant="contained" className="dog-refresh-button" style={{marginTop: '20px'}} onClick={handleRefreshClick}>Refresh</Button>
+      <Button variant="contained" className="dog-refresh-button" style={{marginTop: '20px', backgroundColor: theme.palette.primary.dark }} onClick={handleRefreshClick}>Refresh</Button>
       <div id="dog-container">
         { dogsData && dogsData.map((dog, i) => (
         <div className="dog-pic-div" key={dog.id}>
@@ -69,13 +77,15 @@ function Dogs() {
       <Dialog
         open={showDialog}
         onClose={e => setshowDialog(false)}
+        fullWidth
+        maxWidth="xs"
       >
         <DialogTitle>
           Save to Profile?
         </DialogTitle>
         <DialogActions>
-          <Button onClick={handleSaveDogClicked}>Save</Button>
-          <Button onClick={e => setshowDialog(false)}>Cancel</Button>
+          <LoadingButton variant="contained" loading={loading} onClick={handleSaveDogClicked} color="primary">Save</LoadingButton>
+          <LoadingButton variant="contained" loading={loading} onClick={e => setshowDialog(false)}>Cancel</LoadingButton>
         </DialogActions>
       </Dialog>
     </div>

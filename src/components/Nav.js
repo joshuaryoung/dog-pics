@@ -2,9 +2,11 @@ import { AppBar, Toolbar, IconButton, Typography, Button, Menu, MenuItem } from 
 import MenuIcon from '@mui/icons-material/Menu'
 import React from "react";
 import { NavLink } from 'react-router-dom';
+import { useTheme } from "@mui/system";
 
 
 function App() {
+  const theme = useTheme()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const showMenu = Boolean(anchorEl)
 
@@ -17,7 +19,7 @@ function App() {
   } 
 
   return (
-    <AppBar position="static" className="dogs-app-bar">
+    <AppBar position="static" className="dogs-app-bar" style={{ backgroundColor: theme.palette.primary.main }}>
       <Toolbar>
         <IconButton
           size="large"

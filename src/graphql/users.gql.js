@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
 
 export const UsersQuery = gql`
-  query userById($idIn: Int) {
+  query userById($idIn: Int, $page: Int, $pageSize: Int) {
     userById(idIn: $idIn) {
       firstName
       lastName
-      dogs {
+      dogs (page: $page, pageSize: $pageSize) {
         id
         avatarUrl
         breed {
