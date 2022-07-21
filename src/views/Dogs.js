@@ -77,15 +77,13 @@ function Dogs() {
       <Dialog
         open={showDialog}
         onClose={e => setshowDialog(false)}
-        fullWidth
-        maxWidth="xs"
       >
         <DialogTitle>
           Save to Profile?
         </DialogTitle>
         <DialogActions>
-          <LoadingButton variant="contained" loading={loading} onClick={handleSaveDogClicked} color="primary">Save</LoadingButton>
-          <LoadingButton variant="contained" loading={loading} onClick={e => setshowDialog(false)}>Cancel</LoadingButton>
+          <LoadingButton variant="contained" loading={loading} onClick={handleSaveDogClicked} color="success">Save</LoadingButton>
+          <LoadingButton variant="contained" loading={loading} onClick={e => setshowDialog(false)} color="secondary">Cancel</LoadingButton>
         </DialogActions>
       </Dialog>
     </div>

@@ -4,18 +4,35 @@ import { UsersQuery, RemoveDogFromUserList } from '../graphql/users.gql';
 import { UserDogsQuery } from '../graphql/dogs.gql';
 import { useParams } from 'react-router-dom';
 import { Image } from 'mui-image'
-import { Avatar, TablePagination } from '@mui/material';
+import { Avatar, TablePagination, Dialog, DialogActions, DialogTitle } from '@mui/material';
+import { LoadingButton } from '@mui/lab'
 
 function App() {
   const { userId } = useParams()
   const [page, setPage] = useState(0)
   const [pageSize, setPageSize] = useState(12)
-  const [removeDog, { called, loading, error }] = useMutation(RemoveDogFromUserList)
+  const [showDialog, setshowDialog] = useState(false)
+  const [selectedDogId, setSelectedDogId] = useState(false)
+  const [removeDog, { called, loading, mutationError }] = useMutation(RemoveDogFromUserList)
   const { data: userData } = useQuery(UsersQuery, { variables: { idIn: parseInt(userId) }, fetchPolicy: 'network-only'})
-  const { data: dogData } = useQuery(UserDogsQuery, { variables: { idIn: parseInt(userId), page, pageSize }, fetchPolicy: 'network-only'})
+  const { data: dogData, refetch: refetchUserDogs } = useQuery(UserDogsQuery, { variables: { idIn: parseInt(userId), page, pageSize }, fetchPolicy: 'network-only'})
 
   const handleDogClick = (dogIdIn, userIdIn) => {
+    setSelectedDogId(dogIdIn)
+    setshowDialog(true)
     console.log({dogIdIn, userIdIn}, 'TODO: - Confirmation Dialog - Snackbar Feedback')
+  }
+
+  const handleRemoveDogClicked = async () => {
+    try {
+      await removeDog({ variables: { idIn: parseInt(userId), dogIdIn: selectedDogId } })
+      await refetchUserDogs()
+    } catch (error) {
+      console.error(error)
+    }
+    if (!mutationError) {
+      setshowDialog(false)
+    }
   }
 
   return (
@@ -61,6 +78,19 @@ function App() {
         }}
       />
       }
+
+      <Dialog
+        open={showDialog}
+        onClose={e => setshowDialog(false)}
+      >
+        <DialogTitle>
+          Remove From Profile?
+        </DialogTitle>
+        <DialogActions >
+          <LoadingButton variant="contained" loading={loading} onClick={handleRemoveDogClicked} color="error">Remove</LoadingButton>
+          <LoadingButton variant="contained" loading={loading} onClick={e => setshowDialog(false)} color="secondary">Cancel</LoadingButton>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
