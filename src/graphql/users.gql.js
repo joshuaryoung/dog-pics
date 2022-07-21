@@ -9,3 +9,11 @@ export const UsersQuery = gql`
     }
   }
 `
+
+export const RemoveDogFromUserList = gql`
+  mutation RemoveUserDog ($idIn: Int!, $dogIdIn: String!) {
+    removeDogFromUserList(dogIdIn: $dogIdIn, userIdIn: $idIn) {
+      data
+    }
+  }
+`
