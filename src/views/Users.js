@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { UsersQuery, RemoveDogFromUserList } from '../graphql/users.gql';
 import { UserDogsQuery } from '../graphql/dogs.gql';
 import { useParams } from 'react-router-dom';
 import { Image } from 'mui-image'
-import { Avatar, TablePagination, Dialog, DialogActions, DialogTitle } from '@mui/material';
+import { Avatar, TablePagination, Dialog, DialogActions, DialogTitle, Snackbar, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab'
 
 function App() {
@@ -13,9 +13,33 @@ function App() {
   const [pageSize, setPageSize] = useState(12)
   const [showDialog, setshowDialog] = useState(false)
   const [selectedDogId, setSelectedDogId] = useState(false)
-  const [removeDog, { called, loading, mutationError }] = useMutation(RemoveDogFromUserList)
-  const { data: userData } = useQuery(UsersQuery, { variables: { idIn: parseInt(userId) }, fetchPolicy: 'network-only'})
-  const { data: dogData, refetch: refetchUserDogs } = useQuery(UserDogsQuery, { variables: { idIn: parseInt(userId), page, pageSize }, fetchPolicy: 'network-only'})
+  const [showSnackbar, setShowSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState()
+  const [snackbarSeverity, setSnackbarSeverity] = useState()
+  const [removeDog, { loading, error: mutationError }] = useMutation(RemoveDogFromUserList)
+  const { data: userData, error: userError } = useQuery(UsersQuery, { variables: { idIn: parseInt(userId) }, fetchPolicy: 'network-only'})
+  const { data: dogData, refetch: refetchUserDogs, error: dogQueryError } = useQuery(UserDogsQuery, { variables: { idIn: parseInt(userId), page, pageSize }, fetchPolicy: 'network-only'})
+
+  useEffect(() => {
+    if (dogQueryError) {
+      setSnackbarMessage('There was a problem retrieving your dogs! Please try again or contact support!')
+      setSnackbarSeverity('error')
+      setShowSnackbar(true)
+
+    }
+
+    if (userError) {
+      setSnackbarMessage('There was a problem retrieving your account details! Please try again or contact support!')
+      setSnackbarSeverity('error')
+      setShowSnackbar(true)
+    }
+    
+    if (mutationError) {
+      setSnackbarMessage('There was a problem adding that dog! Please try again or contact support!')
+      setSnackbarSeverity('error')
+      setShowSnackbar(true)
+    }
+  }, [mutationError, dogQueryError, userError])
 
   const handleDogClick = (dogIdIn, userIdIn) => {
     setSelectedDogId(dogIdIn)
@@ -26,12 +50,13 @@ function App() {
   const handleRemoveDogClicked = async () => {
     try {
       await removeDog({ variables: { idIn: parseInt(userId), dogIdIn: selectedDogId } })
+      setSnackbarMessage('Dog successfully removed!')
+      setSnackbarSeverity('success')
+      setShowSnackbar(true)
+      setshowDialog(false)
       await refetchUserDogs()
     } catch (error) {
       console.error(error)
-    }
-    if (!mutationError) {
-      setshowDialog(false)
     }
   }
 
@@ -86,11 +111,19 @@ function App() {
         <DialogTitle>
           Remove From Profile?
         </DialogTitle>
-        <DialogActions >
+        <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
           <LoadingButton variant="contained" loading={loading} onClick={handleRemoveDogClicked} color="error">Remove</LoadingButton>
-          <LoadingButton variant="contained" loading={loading} onClick={e => setshowDialog(false)} color="secondary">Cancel</LoadingButton>
+          <LoadingButton variant="contained" onClick={e => setshowDialog(false)} color="secondary">Cancel</LoadingButton>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={3000}
+        onClose={e => setShowSnackbar(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
+      </Snackbar>
     </div>
   );
 }

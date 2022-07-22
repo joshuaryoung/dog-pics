@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
+import { Alert, Button, Dialog, DialogActions, DialogTitle, Snackbar } from '@mui/material'
 import { Image } from 'mui-image'
 import { useMutation } from '@apollo/client'
 import { AddDogMutation } from '../graphql/dogs.gql'
@@ -8,17 +8,23 @@ import { LoadingButton } from '@mui/lab'
 
 function Dogs() {
   const theme = useTheme()
-  const [addDog, { called, loading, error }] = useMutation(AddDogMutation)
+  const [addDog, { called, loading, error: mutationError }] = useMutation(AddDogMutation)
   const [dogsData, setDogsData] = useState()
-  const [showDialog, setshowDialog] = useState(false)
+  const [showDialog, setShowDialog] = useState(false)
+  const [showSnackbar, setShowSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState()
+  const [snackbarSeverity, setSnackbarSeverity] = useState()
   const [selectedDog, setSelectedDog] = useState(false)
 
   useEffect(() => {fetchDogs()}, [])
-  useEffect(() => { if (called) afterMutationCalled() }, [called])
-
-  const afterMutationCalled = () => {
-    console.log('here')
-  }
+  useEffect(() => {
+    if (!mutationError) {
+      return
+    }
+    setSnackbarMessage('There was a problem adding that dog! Please try again or contact support!')
+    setSnackbarSeverity('error')
+    setShowSnackbar(true)
+  }, [mutationError])
 
   const handleRefreshClick = e => {
     fetchDogs()
@@ -33,6 +39,9 @@ function Dogs() {
       })
     } catch(error) {
       console.error(error)
+      setSnackbarMessage('There was a problem retrieving the dogs! Please try again or contact support!')
+      setSnackbarSeverity('error')
+      setShowSnackbar(true)
     }
   }
 
@@ -43,7 +52,7 @@ function Dogs() {
     }
 
     setSelectedDog(dogsData[i])
-    setshowDialog(true)
+    setShowDialog(true)
   }
 
   const handleSaveDogClicked = async e => {
@@ -53,7 +62,10 @@ function Dogs() {
       avatarUrl: selectedDog.url
     }
     await addDog({ variables: { dogIn, userIdIn: 1000 } })
-    setshowDialog(false)
+    setSnackbarMessage('Dog successfully added!')
+    setSnackbarSeverity('success')
+    setShowSnackbar(true)
+    setShowDialog(false)
   }
 
   return (
@@ -76,16 +88,24 @@ function Dogs() {
 
       <Dialog
         open={showDialog}
-        onClose={e => setshowDialog(false)}
+        onClose={e => setShowDialog(false)}
       >
         <DialogTitle>
           Save to Profile?
         </DialogTitle>
-        <DialogActions>
+        <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
           <LoadingButton variant="contained" loading={loading} onClick={handleSaveDogClicked} color="success">Save</LoadingButton>
-          <LoadingButton variant="contained" loading={loading} onClick={e => setshowDialog(false)} color="secondary">Cancel</LoadingButton>
+          <LoadingButton variant="contained" onClick={e => setShowDialog(false)} color="secondary">Cancel</LoadingButton>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={3000}
+        onClose={e => setShowSnackbar(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
+      </Snackbar>
     </div>
   );
 }
