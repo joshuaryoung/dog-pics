@@ -8,7 +8,7 @@ import { LoadingButton } from '@mui/lab'
 
 function Dogs() {
   const theme = useTheme()
-  const [addDog, { called, loading, error: mutationError }] = useMutation(AddDogMutation)
+  const [addDog, { loading, error: mutationError }] = useMutation(AddDogMutation)
   const [dogsData, setDogsData] = useState()
   const [showDialog, setShowDialog] = useState(false)
   const [showSnackbar, setShowSnackbar] = useState(false)
