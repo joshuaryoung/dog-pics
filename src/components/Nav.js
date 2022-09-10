@@ -19,9 +19,6 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
   }
 
   const handleLoginClick = (e) => {
-    if (isLoggedIn) {
-
-    }
     setIsLoggedIn(state => !state)
     handleMenuClose()
   }
