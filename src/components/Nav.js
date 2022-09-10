@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { useTheme } from "@mui/system";
 
 
-function App() {
+function Nav({ isLoggedIn, setIsLoggedIn }) {
   const theme = useTheme()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const showMenu = Boolean(anchorEl)
@@ -16,7 +16,15 @@ function App() {
 
   const handleMenuClose = (e) => {
     setAnchorEl(null)
-  } 
+  }
+
+  const handleLoginClick = (e) => {
+    if (isLoggedIn) {
+
+    }
+    setIsLoggedIn(state => !state)
+    handleMenuClose()
+  }
 
   return (
     <AppBar position="static" className="dogs-app-bar" style={{ backgroundColor: theme.palette.primary.main }}>
@@ -43,18 +51,18 @@ function App() {
           {/* <Button color="inherit" component={NavLink} to="/">Home</Button>
           <Button color="inherit" component={NavLink} to="/Users">Users</Button>
           <Button color="inherit" component={NavLink} to="/Users/12345">Users/12345</Button> */}
-          <MenuItem onClick={handleMenuClose}  component={NavLink} to="/">Home</MenuItem>
+          <MenuItem onClick={handleMenuClose} component={NavLink} to="/">Home</MenuItem>
           <MenuItem onClick={handleMenuClose} component={NavLink} to="/users/1000">My account</MenuItem>
           <MenuItem onClick={handleMenuClose} component={NavLink} to="/dogs">Dogs</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+          <MenuItem onClick={handleLoginClick} component={NavLink} to="/login">{isLoggedIn ? 'Logout' : 'Login'}</MenuItem>
         </Menu>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Dog Connoisseur
         </Typography>
-        <Button color="inherit">Login</Button>
+        <Button color="inherit">{isLoggedIn ? 'Logout' : 'Login'}</Button>
       </Toolbar>
     </AppBar>
     )
 }
 
-export default App
+export default Nav
