@@ -1,6 +1,6 @@
-import { AppBar, Toolbar, IconButton, Typography, Button, Menu, MenuItem } from "@mui/material";
+import { AppBar, Toolbar, IconButton, Typography, Button, Menu, MenuItem, Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu'
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from 'react-router-dom';
 import { useTheme } from "@mui/system";
 
@@ -8,10 +8,10 @@ import { useTheme } from "@mui/system";
 function Nav({ isLoggedIn, setIsLoggedIn }) {
   const theme = useTheme()
   const [anchorEl, setAnchorEl] = React.useState(null)
-  const showMenu = Boolean(anchorEl)
+  const [showMenu, setShowMenu] = useState(false)
 
   const handleMenuClick = (e) => {
-    setAnchorEl(e.currentTarget)
+    setShowMenu(state => !state)
   } 
 
   const handleMenuClose = (e) => {
@@ -36,7 +36,31 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
         >
           <MenuIcon />
         </IconButton>
-        <Menu
+        <Drawer anchor="left" open={showMenu} onClose={e => setShowMenu(false)}>
+          <List onClick={e => setShowMenu(false)}>
+            <ListItem component={NavLink} to="/" key="home">
+              <ListItemButton>
+                <ListItemText primary="Home" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem component={NavLink} to="/login" key="login">
+              <ListItemButton>
+                <ListItemText>Login</ListItemText>
+              </ListItemButton>
+            </ListItem>
+            <ListItem component={NavLink} to="/dogs" key="dogs">
+              <ListItemButton>
+                <ListItemText>Dog Gallery</ListItemText>
+              </ListItemButton>
+            </ListItem>
+            <ListItem component={NavLink} to="/users/1000" key="myDogs">
+              <ListItemButton color="white">
+                <ListItemText>My Dogs</ListItemText>
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </Drawer>
+        {/* <Menu
           id="basic-menu"
           anchorEl={anchorEl}
           open={showMenu}
@@ -47,12 +71,12 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
         >
           {/* <Button color="inherit" component={NavLink} to="/">Home</Button>
           <Button color="inherit" component={NavLink} to="/Users">Users</Button>
-          <Button color="inherit" component={NavLink} to="/Users/12345">Users/12345</Button> */}
+          <Button color="inherit" component={NavLink} to="/Users/12345">Users/12345</Button> }
           <MenuItem onClick={handleMenuClose} component={NavLink} to="/">Home</MenuItem>
           <MenuItem onClick={handleMenuClose} component={NavLink} to="/users/1000">My account</MenuItem>
           <MenuItem onClick={handleMenuClose} component={NavLink} to="/dogs">Dogs</MenuItem>
           <MenuItem onClick={handleLoginClick} component={NavLink} to="/login">{isLoggedIn ? 'Logout' : 'Login'}</MenuItem>
-        </Menu>
+        </Menu> */}
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Dog Connoisseur
         </Typography>
