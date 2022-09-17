@@ -1,12 +1,15 @@
 import { AppBar, Toolbar, IconButton, Typography, Button, Menu, MenuItem, Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu'
 import React, { useState } from "react";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useTheme } from "@mui/system";
+import { defaultPrincipal } from "../App";
+import { deleteJwtCookie } from "../security";
 
 
-function Nav({ isLoggedIn, setIsLoggedIn }) {
+function Nav({ principal, setPrincipal }) {
   const theme = useTheme()
+  const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [showMenu, setShowMenu] = useState(false)
 
@@ -19,8 +22,14 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
   }
 
   const handleLoginClick = (e) => {
-    setIsLoggedIn(state => !state)
-    handleMenuClose()
+    navigate({ pathname: '/login' })
+  }
+
+  const handleLogoutClick = () => {
+    deleteJwtCookie()
+    setPrincipal(state => defaultPrincipal)
+    navigate({ pathname: '/login' })
+    // TODO: Confirmation modal
   }
 
   return (
@@ -43,21 +52,18 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
                 <ListItemText primary="Home" />
               </ListItemButton>
             </ListItem>
-            <ListItem component={NavLink} to="/login" key="login">
-              <ListItemButton>
-                <ListItemText>Login</ListItemText>
-              </ListItemButton>
-            </ListItem>
             <ListItem component={NavLink} to="/dogs" key="dogs">
               <ListItemButton>
                 <ListItemText>Dog Gallery</ListItemText>
               </ListItemButton>
             </ListItem>
-            <ListItem component={NavLink} to="/users/1000" key="myDogs">
-              <ListItemButton color="white">
-                <ListItemText>My Dogs</ListItemText>
-              </ListItemButton>
-            </ListItem>
+            {principal && principal.jwt &&
+              <ListItem component={NavLink} to={`/users/${principal && principal.id}`} key="myDogs">
+                <ListItemButton color="white">
+                  <ListItemText>My Dogs</ListItemText>
+                </ListItemButton>
+              </ListItem>
+            }
           </List>
         </Drawer>
         {/* <Menu
@@ -80,7 +86,7 @@ function Nav({ isLoggedIn, setIsLoggedIn }) {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Dog Connoisseur
         </Typography>
-        <Button color="inherit">{isLoggedIn ? 'Logout' : 'Login'}</Button>
+        <Button color="inherit" onClick={principal && principal.jwt ?handleLogoutClick : handleLoginClick }>{principal && principal.jwt ? 'Logout' : 'Login'}</Button>
       </Toolbar>
     </AppBar>
     )

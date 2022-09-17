@@ -5,8 +5,10 @@ import { useMutation } from '@apollo/client'
 import { AddDogMutation } from '../graphql/dogs.gql'
 import { useTheme } from '@mui/system'
 import { LoadingButton } from '@mui/lab'
+import { useNavigate } from 'react-router-dom'
 
-function Dogs() {
+function Dogs({ principal }) {
+  const navigate = useNavigate()
   const theme = useTheme()
   const [addDog, { loading, error: mutationError }] = useMutation(AddDogMutation)
   const [dogsData, setDogsData] = useState()
@@ -56,12 +58,16 @@ function Dogs() {
   }
 
   const handleSaveDogClicked = async e => {
+    if (!(principal && principal.jwt)) {
+      navigate({ pathname: '/login' })
+    }
+  
     const dogIn = {
       id: selectedDog.id,
       breed: selectedDog.breed,
       avatarUrl: selectedDog.url
     }
-    await addDog({ variables: { dogIn, userIdIn: 1000 } })
+    await addDog({ variables: { dogIn, userIdIn: principal.id } })
     setSnackbarMessage('Dog successfully added!')
     setSnackbarSeverity('success')
     setShowSnackbar(true)

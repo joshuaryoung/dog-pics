@@ -10,6 +10,15 @@ export const UsersQuery = gql`
   }
 `
 
+export const PrincipalQuery = gql`
+  query getUser($idIn: Int!) {
+    userById(idIn: $idIn) {
+      firstName
+      lastName
+    }
+  }
+`
+
 export const RemoveDogFromUserList = gql`
   mutation RemoveUserDog ($idIn: Int!, $dogIdIn: String!) {
     removeDogFromUserList(dogIdIn: $dogIdIn, userIdIn: $idIn) {

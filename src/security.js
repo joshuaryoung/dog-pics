@@ -17,3 +17,11 @@ export const setJwtCookie = (jwt, expires) => {
     const cookieString = `jwt=${jwt}; Expires=${expDateString}; SameSite=Strict`
     document.cookie = cookieString
 }
+
+export const deleteJwtCookie = () => {
+    const dateObj = new Date()
+    dateObj.setDate(dateObj.getDate() - 1)
+    const dateString = dateObj.toGMTString()
+    const cookieString = `jwt=null; Expires=${dateString}`
+    document.cookie = cookieString
+}

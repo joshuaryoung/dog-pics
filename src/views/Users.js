@@ -44,7 +44,6 @@ function App() {
   const handleDogClick = (dogIdIn, userIdIn) => {
     setSelectedDogId(dogIdIn)
     setshowDialog(true)
-    console.log({dogIdIn, userIdIn}, 'TODO: - Confirmation Dialog - Snackbar Feedback')
   }
 
   const handleRemoveDogClicked = async () => {
