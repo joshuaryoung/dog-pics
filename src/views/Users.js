@@ -91,17 +91,23 @@ function App() {
       }
       </div>
       { dogData && 
-      <TablePagination
-        count={dogData.userDogs.totalResults}
-        page={page}
-        rowsPerPage={pageSize}
-        rowsPerPageOptions={[4, 8, 12]}
-        onPageChange={(e, page) => setPage(page)}
-        onRowsPerPageChange={(e, { props }) => {
-          setPageSize(props.value)
-          setPage(0)
-        }}
-      />
+      <table>
+        <tbody>
+          <tr>
+            <TablePagination
+              count={dogData.userDogs.totalResults}
+              page={page}
+              rowsPerPage={pageSize}
+              rowsPerPageOptions={[4, 8, 12]}
+              onPageChange={(e, page) => setPage(page)}
+              onRowsPerPageChange={(e, { props }) => {
+                setPageSize(props.value)
+                setPage(0)
+              }}
+            />
+          </tr>
+        </tbody>
+      </table>
       }
 
       <Dialog

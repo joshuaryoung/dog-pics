@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Home from './views/Home';
 import Nav from './components/Nav'
@@ -6,11 +6,13 @@ import Users from './views/Users'
 import Dogs from './views/Dogs'
 import Login from './views/Login'
 import UserCreate from './views/UserCreate'
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, useLazyQuery } from '@apollo/client';
 import LoadingOverlay from './components/LoadingOverlay'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Container } from '@mui/system';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { getJwtFromCookies } from './security';
+import jwtDecode from 'jwt-decode';
 
 const client = new ApolloClient({
   uri: process.env.REACT_APP_GRAPHQL_URI,
@@ -39,15 +41,34 @@ const darkTheme = createTheme({
   },
 })
 
+const defaultPrincipal = {
+  firstName: '',
+  lastName: '',
+  jwt: '',
+  id: null
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true)
+  const [principal, setPrincipal] = useState(defaultPrincipal)
   const [showLoadingOverlay, setShowLoadingOverlay] = useState(false)
+  // TODO: HERE! const [] = useLazyQuery()
+
+  useEffect(() => {
+    const jwt = getJwtFromCookies()
+    console.log({ jwt })
+    if (jwt) {
+      const decodedJwt = jwtDecode(jwt)
+      const { id } = decodedJwt ?? {}
+
+      console.log('how to set principal?', { jwt, decodedJwt })
+    }
+  }, [])
+
   const handleCloseLoadingOverlay = () => {
-    console.log('closeLoadingOvelay')
     setShowLoadingOverlay(false)
   }
   const handleOpenLoadingOverlay = () => {
-    console.log('handleOpenLoadingOverlay')
     setShowLoadingOverlay(true)
   }
 
@@ -65,7 +86,7 @@ function App() {
                   <Route path="/users/:userId" element={<Users />} />
                   <Route path="/users" element={<Users />} />
                   <Route path="/user-create" element={<UserCreate />} />
-                  <Route path="/login" element={<Login />} />
+                  <Route path="/login" element={<Login principal={principal} setPrincipal={setPrincipal} />} />
                   <Route path="/dogs" element={<Dogs handleOpenLoadingOverlay={handleOpenLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} />} />
                 </Routes>
               </Container>

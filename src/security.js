@@ -12,6 +12,8 @@ export const getJwtFromCookies = () => {
     return jwt
 }
 
-export const setJwtCookie = (jwt) => {
-    document.cookie = `jwt=${jwt.token}; expires=${jwt.expires}`
+export const setJwtCookie = (jwt, expires) => {
+    const expDateString = new Date(expires).toGMTString()
+    const cookieString = `jwt=${jwt}; Expires=${expDateString}; SameSite=Strict`
+    document.cookie = cookieString
 }
