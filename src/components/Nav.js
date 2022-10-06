@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, IconButton, Typography, Button, Menu, MenuItem, Drawer, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { AppBar, Toolbar, IconButton, Typography, Button, Menu, MenuItem, Drawer, List, ListItem, ListItemButton, ListItemText, Divider } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu'
 import React, { useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -47,19 +47,22 @@ function Nav({ principal, setPrincipal }) {
         </IconButton>
         <Drawer anchor="left" open={showMenu} onClose={e => setShowMenu(false)}>
           <List onClick={e => setShowMenu(false)}>
-            <ListItem component={NavLink} to="/" key="home">
-              <ListItemButton>
+            <ListItem divider key="logo" sx={{ marginBottom: '20px' }}>
+              <ListItemText>Dog Connoisseur</ListItemText>
+            </ListItem>
+            <ListItem key="home">
+              <ListItemButton component={NavLink} to="/">
                 <ListItemText primary="Home" />
               </ListItemButton>
             </ListItem>
-            <ListItem component={NavLink} to="/dogs" key="dogs">
-              <ListItemButton>
+            <ListItem key="dogs">
+              <ListItemButton component={NavLink} to="/dogs">
                 <ListItemText>Dog Gallery</ListItemText>
               </ListItemButton>
             </ListItem>
             {principal && principal.id &&
-              <ListItem component={NavLink} to={`/users/${principal && principal.id}`} key="myDogs">
-                <ListItemButton color="white">
+              <ListItem key="myDogs">
+                <ListItemButton  component={NavLink} to={`/users/${principal && principal.id}`}>
                   <ListItemText>My Dogs</ListItemText>
                 </ListItemButton>
               </ListItem>
@@ -83,7 +86,7 @@ function Nav({ principal, setPrincipal }) {
           <MenuItem onClick={handleMenuClose} component={NavLink} to="/dogs">Dogs</MenuItem>
           <MenuItem onClick={handleLoginClick} component={NavLink} to="/login">{isLoggedIn ? 'Logout' : 'Login'}</MenuItem>
         </Menu> */}
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h5" component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
           Dog Connoisseur
         </Typography>
         <Button color="inherit" onClick={principal && principal.id ? handleLogoutClick : handleLoginClick }>{principal && principal.id ? 'Logout' : 'Login'}</Button>

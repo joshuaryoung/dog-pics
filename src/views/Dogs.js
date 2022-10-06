@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Button, Dialog, DialogActions, DialogTitle, Snackbar } from '@mui/material'
+import { Alert, Button, Dialog, DialogActions, DialogTitle, Grid, Snackbar } from '@mui/material'
 import { Image } from 'mui-image'
 import { useMutation } from '@apollo/client'
 import { AddDogMutation } from '../graphql/dogs.gql'
@@ -34,9 +34,10 @@ function Dogs({ principal }) {
 
   const fetchDogs = () => {
     try {
-      fetch('https://api.thedogapi.com/v1/images/search?limit=12&order=Desc')
+      fetch('https://api.thedogapi.com/v1/images/search?limit=8&order=Desc')
       .then(res => res.json())
       .then(data => {
+        console.log({ data })
         setDogsData(data)
       })
     } catch(error) {
@@ -76,7 +77,6 @@ function Dogs({ principal }) {
 
   return (
     <div>
-      <Button variant="contained" className="dog-refresh-button" style={{marginTop: '20px', backgroundColor: theme.palette.primary.dark }} onClick={handleRefreshClick}>Refresh</Button>
       <div id="dog-container">
         { dogsData && dogsData.map((dog, i) => (
         <div className="dog-pic-div" key={dog.id}>
@@ -91,6 +91,13 @@ function Dogs({ principal }) {
         </div>))
         }
       </div>
+
+      <Grid container justifyContent="center">
+        <Grid item>
+          <Button variant="contained" className="dog-refresh-button" style={{marginTop: '20px', backgroundColor: theme.palette.primary.dark }} onClick={handleRefreshClick}>Refresh</Button>
+        </Grid>
+      </Grid>
+      
 
       <Dialog
         open={showDialog}
