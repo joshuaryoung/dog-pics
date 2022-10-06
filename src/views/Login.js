@@ -4,7 +4,7 @@ import { Alert, Box, Card, CardActions, CardContent, CardHeader, Snackbar, Grid,
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { LoginMutation } from "../graphql/login.gql"
-import { setJwtCookie } from "../security"
+import { setJwtLocalStorage } from "../security"
 
 function Login ({ principal, setPrincipal }) {
     const navigate = useNavigate()
@@ -13,7 +13,7 @@ function Login ({ principal, setPrincipal }) {
     const [loginMutateFunction, { loading, error, reset }] = useMutation(LoginMutation)
 
     useEffect(() => {
-        if (principal && principal.jwt && principal.id) {
+        if (principal && principal.id) {
             navigate(`/users/${principal.id}`, { replace: true })
         }
     }, [principal])
@@ -31,7 +31,7 @@ function Login ({ principal, setPrincipal }) {
                 return
             }
 
-            setJwtCookie(jwt, expires)
+            setJwtLocalStorage(jwt, expires)
 
             setPrincipal(state => {
                 return {

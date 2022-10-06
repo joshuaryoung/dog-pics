@@ -11,10 +11,11 @@ export const UsersQuery = gql`
 `
 
 export const PrincipalQuery = gql`
-  query getUser($idIn: Int!) {
-    userById(idIn: $idIn) {
+  query GetPrincipal {
+    me {
       firstName
       lastName
+      id
     }
   }
 `

@@ -1,27 +1,21 @@
-export const getJwtFromCookies = () => {
-    const cookiesString = document.cookie
-    const parsedCookies = cookiesString.split(';').filter(el => el).map(el => {
-        const [key, val] = (el && el.split('=')) ?? [null, null]
-        if (!key) {
-            return null
-        }
-        return { key, val }
-    })
-    const jwt = (parsedCookies.find(el => el.key === 'jwt') ?? {}).val
+export const getJwtFromLocalStorage = () => {
+    let jwt = ''
+    const { token, expires } = JSON.parse(localStorage.getItem('jwt') ?? '{}')
+    if (!expires || expires <= new Date()) {
+        deleteJwtToken()
+        return jwt
+    }
+    jwt = `Bearer ${token}`
 
     return jwt
 }
 
-export const setJwtCookie = (jwt, expires) => {
-    const expDateString = new Date(expires).toGMTString()
-    const cookieString = `jwt=${jwt}; Expires=${expDateString}; SameSite=Strict`
-    document.cookie = cookieString
+export const setJwtLocalStorage = (jwt, expires) => {
+    const expDate = new Date(expires)
+    const tokenObj = { token: jwt, expires: expDate }
+    localStorage.setItem('jwt', JSON.stringify(tokenObj))
 }
 
-export const deleteJwtCookie = () => {
-    const dateObj = new Date()
-    dateObj.setDate(dateObj.getDate() - 1)
-    const dateString = dateObj.toGMTString()
-    const cookieString = `jwt=null; Expires=${dateString}`
-    document.cookie = cookieString
+export const deleteJwtToken = () => {
+    localStorage.removeItem('jwt')
 }

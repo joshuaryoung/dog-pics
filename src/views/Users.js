@@ -2,13 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { UsersQuery, RemoveDogFromUserList } from '../graphql/users.gql';
 import { UserDogsQuery } from '../graphql/dogs.gql';
-import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Image } from 'mui-image'
 import { Avatar, TablePagination, Dialog, DialogActions, DialogTitle, Snackbar, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab'
 
-function App() {
-  const { userId } = useParams()
+function App({ principal }) {
+  const navigate = useNavigate()
+  const userId = principal && principal.id
+
+  useEffect(() => {
+    if (!userId) {
+      navigate({ pathname: '/login' })
+    }
+  }, [])
+
   const [page, setPage] = useState(0)
   const [pageSize, setPageSize] = useState(12)
   const [showDialog, setshowDialog] = useState(false)
@@ -17,8 +25,8 @@ function App() {
   const [snackbarMessage, setSnackbarMessage] = useState()
   const [snackbarSeverity, setSnackbarSeverity] = useState()
   const [removeDog, { loading, error: mutationError }] = useMutation(RemoveDogFromUserList)
-  const { data: userData, error: userError } = useQuery(UsersQuery, { variables: { idIn: parseInt(userId) }, fetchPolicy: 'network-only'})
-  const { data: dogData, refetch: refetchUserDogs, error: dogQueryError } = useQuery(UserDogsQuery, { variables: { idIn: parseInt(userId), page, pageSize }, fetchPolicy: 'network-only'})
+  const { data: userData, error: userError } = useQuery(UsersQuery, { variables: { idIn: userId }, fetchPolicy: 'network-only'})
+  const { data: dogData, refetch: refetchUserDogs, error: dogQueryError } = useQuery(UserDogsQuery, { variables: { idIn: userId, page, pageSize }, fetchPolicy: 'network-only'})
 
   useEffect(() => {
     if (dogQueryError) {
@@ -48,7 +56,7 @@ function App() {
 
   const handleRemoveDogClicked = async () => {
     try {
-      await removeDog({ variables: { idIn: parseInt(userId), dogIdIn: selectedDogId } })
+      await removeDog({ variables: { idIn: userId, dogIdIn: selectedDogId } })
       setSnackbarMessage('Dog successfully removed!')
       setSnackbarSeverity('success')
       setShowSnackbar(true)

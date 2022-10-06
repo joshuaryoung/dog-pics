@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTheme } from "@mui/system";
 import { defaultPrincipal } from "../App";
-import { deleteJwtCookie } from "../security";
+import { deleteJwtToken } from "../security";
 
 
 function Nav({ principal, setPrincipal }) {
@@ -26,7 +26,7 @@ function Nav({ principal, setPrincipal }) {
   }
 
   const handleLogoutClick = () => {
-    deleteJwtCookie()
+    deleteJwtToken()
     setPrincipal(state => defaultPrincipal)
     navigate({ pathname: '/login' })
     // TODO: Confirmation modal
@@ -57,7 +57,7 @@ function Nav({ principal, setPrincipal }) {
                 <ListItemText>Dog Gallery</ListItemText>
               </ListItemButton>
             </ListItem>
-            {principal && principal.jwt &&
+            {principal && principal.id &&
               <ListItem component={NavLink} to={`/users/${principal && principal.id}`} key="myDogs">
                 <ListItemButton color="white">
                   <ListItemText>My Dogs</ListItemText>
@@ -86,7 +86,7 @@ function Nav({ principal, setPrincipal }) {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Dog Connoisseur
         </Typography>
-        <Button color="inherit" onClick={principal && principal.jwt ?handleLogoutClick : handleLoginClick }>{principal && principal.jwt ? 'Logout' : 'Login'}</Button>
+        <Button color="inherit" onClick={principal && principal.id ? handleLogoutClick : handleLoginClick }>{principal && principal.id ? 'Logout' : 'Login'}</Button>
       </Toolbar>
     </AppBar>
     )

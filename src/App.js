@@ -11,14 +11,8 @@ import LoadingOverlay from './components/LoadingOverlay'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Container } from '@mui/system';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { getJwtFromCookies } from './security';
-import jwtDecode from 'jwt-decode';
+import { getJwtFromLocalStorage } from './security';
 import { PrincipalQuery } from './graphql/users.gql';
-
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPHQL_URI,
-  cache: new InMemoryCache(),
-});
 
 const darkTheme = createTheme({
   palette: {
@@ -45,42 +39,48 @@ const darkTheme = createTheme({
 export const defaultPrincipal = {
   firstName: '',
   lastName: '',
-  jwt: '',
   id: null
 }
 
 function App() {
+  const client = new ApolloClient({
+    uri: process.env.REACT_APP_GRAPHQL_URI,
+    cache: new InMemoryCache(),
+    headers: {
+      authorization: getJwtFromLocalStorage()
+    }
+  });
+
   const [principal, setPrincipal] = useState(defaultPrincipal)
   const [showLoadingOverlay, setShowLoadingOverlay] = useState(false)
 
   useEffect(() => {
-    async function getJwt() {
-      const jwt = getJwtFromCookies()
-      if (jwt) {
-        const decodedJwt = jwtDecode(jwt) ?? {}
-        const id = parseInt(decodedJwt.id)
+    async function getPrincipal() {
+      try {
+        const jwt = getJwtFromLocalStorage()
+        console.log({ jwt })
 
-        try {
-          const res = await client.query({ query: PrincipalQuery, variables: { idIn: id } })
-          
-          const { data: resData } = res ?? {}
-          const { userById } = resData ?? {}
-          const { firstName, lastName } = userById ?? {}
-
-          setPrincipal(state => {
-            return {
-              id,
-              firstName,
-              lastName,
-              jwt
-            }
-          })
-        } catch (error) {
-          console.error(error)
+        if (!jwt) {
+          return
         }
+        const res = await client.query({ query: PrincipalQuery })
+        
+        const { data: resData } = res ?? {}
+        const { me } = resData ?? {}
+        const { firstName, lastName, id } = me ?? {}
+
+        setPrincipal(state => {
+          return {
+            id,
+            firstName,
+            lastName
+          }
+        })
+      } catch (error) {
+        console.error(error)
       }
     }
-    getJwt()
+    getPrincipal()
   }, [])
 
   const handleCloseLoadingOverlay = () => {
@@ -101,8 +101,8 @@ function App() {
               <Container maxWidth="xl">
                 <Routes>
                   <Route index path="/" element={<Home />} />
-                  <Route path="/users/:userId" element={<Users />} />
-                  <Route path="/users" element={<Users />} />
+                  <Route path="/users/:userId" element={<Users principal={principal} />} />
+                  <Route path="/users" element={<Users principal={principal} />} />
                   <Route path="/user-create" element={<UserCreate />} />
                   <Route path="/login" element={<Login principal={principal} setPrincipal={setPrincipal} />} />
                   <Route path="/dogs" element={<Dogs handleOpenLoadingOverlay={handleOpenLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} principal={principal} />} />
