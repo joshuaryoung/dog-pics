@@ -27,3 +27,14 @@ export const RemoveDogFromUserList = gql`
     }
   }
 `
+
+export const CreateUserMutation = gql`
+  mutation UserCreate($username: String!, $password: String!, $firstName: String!, $lastName: String!) {
+    userCreate(firstName: $firstName, lastName: $lastName, username: $username, password: $password) {
+      data {
+        success
+        message
+      }
+    }
+  }
+`
