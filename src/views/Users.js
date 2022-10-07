@@ -6,10 +6,19 @@ import { useNavigate } from 'react-router-dom';
 import { Image } from 'mui-image'
 import { Avatar, TablePagination, Dialog, DialogActions, DialogTitle, Snackbar, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab'
+import { getJwtFromLocalStorage } from '../security';
+import jwtDecode from 'jwt-decode';
 
 function App({ principal }) {
   const navigate = useNavigate()
-  const userId = principal && principal.id
+  const jwt = getJwtFromLocalStorage()
+  let jwtId
+  if (jwt) {
+    const decodedJwt = jwtDecode(jwt) ?? {}
+    jwtId = decodedJwt.id ? parseInt(decodedJwt.id) : null
+  }
+  // debugger
+  const userId = (principal && principal.id) ?? jwtId
 
   useEffect(() => {
     if (!userId) {
@@ -25,7 +34,7 @@ function App({ principal }) {
   const [snackbarMessage, setSnackbarMessage] = useState()
   const [snackbarSeverity, setSnackbarSeverity] = useState()
   const [removeDog, { loading, error: mutationError }] = useMutation(RemoveDogFromUserList)
-  const { data: userData, error: userError } = useQuery(UsersQuery, { variables: { idIn: userId }, fetchPolicy: 'network-only'})
+  const { data: userData, error: userError } = useQuery(UsersQuery, { fetchPolicy: 'network-only'})
   const { data: dogData, refetch: refetchUserDogs, error: dogQueryError } = useQuery(UserDogsQuery, { variables: { idIn: userId, page, pageSize }, fetchPolicy: 'network-only'})
 
   useEffect(() => {
@@ -69,12 +78,12 @@ function App({ principal }) {
 
   return (
     <div>
-      {userData && userData.userById && 
+      {userData && userData.me && 
       <div>
-        <div style={{ marginTop: '20px' }}>{`${userData.userById.firstName} ${userData.userById.lastName}`}</div>
+        <div style={{ marginTop: '20px' }}>{`${userData.me.firstName} ${userData.me.lastName}`}</div>
         <div style={{ marginTop: '10px' }}>
           <Avatar
-            src={userData.userById.avatarUrl}
+            src={userData.me.avatarUrl}
             sx={{ width: 120, height: 120 }}
           />  
         </div>
@@ -82,8 +91,8 @@ function App({ principal }) {
       }
       <div style={{ marginTop: '20px' }}>Saved Dogs</div>
       <div id="saved-dogs-container">
-        {dogData && dogData.userDogs && dogData.userDogs.data &&
-        dogData.userDogs.data.map(dog => {
+        {dogData && dogData.myDogs && dogData.myDogs.data &&
+        dogData.myDogs.data.map(dog => {
           return <Image
                   key={dog.id}
                   src={dog.avatarUrl}
@@ -102,7 +111,7 @@ function App({ principal }) {
         <tbody>
           <tr>
             <TablePagination
-              count={dogData.userDogs.totalResults}
+              count={dogData.myDogs.totalResults}
               page={page}
               rowsPerPage={pageSize}
               rowsPerPageOptions={[4, 8, 12]}

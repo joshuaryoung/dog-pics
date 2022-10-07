@@ -5,7 +5,7 @@ import Nav from './components/Nav'
 import Users from './views/Users'
 import Dogs from './views/Dogs'
 import Login from './views/Login'
-import UserCreate from './views/UserCreate'
+import Signup from './views/Signup'
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import LoadingOverlay from './components/LoadingOverlay'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -58,7 +58,6 @@ function App() {
     async function getPrincipal() {
       try {
         const jwt = getJwtFromLocalStorage()
-        console.log({ jwt })
 
         if (!jwt) {
           return
@@ -103,7 +102,7 @@ function App() {
                   <Route index path="/" element={<Home />} />
                   <Route path="/users/:userId" element={<Users principal={principal} />} />
                   <Route path="/users" element={<Users principal={principal} />} />
-                  <Route path="/user-create" element={<UserCreate />} />
+                  <Route path="/signup" element={<Signup />} />
                   <Route path="/login" element={<Login principal={principal} setPrincipal={setPrincipal} />} />
                   <Route path="/dogs" element={<Dogs handleOpenLoadingOverlay={handleOpenLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} principal={principal} />} />
                 </Routes>

@@ -1,7 +1,7 @@
 import { Container, Grid, Typography } from '@mui/material';
 import React from 'react';
 
-function App() {
+function Home() {
   return (
     <Container sx={{ marginTop: '70px' }}>
       <Grid container justifyContent="center">
@@ -30,4 +30,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;

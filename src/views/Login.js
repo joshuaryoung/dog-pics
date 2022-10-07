@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client"
 import { LoadingButton } from "@mui/lab"
-import { Alert, Box, Card, CardActions, CardContent, CardHeader, Snackbar, Grid, TextField } from "@mui/material"
+import { Alert, Box, Card, CardActions, CardContent, CardHeader, Snackbar, Grid, TextField, Button } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { LoginMutation } from "../graphql/login.gql"
@@ -65,9 +65,12 @@ function Login ({ principal, setPrincipal }) {
                         </Box>
                     </CardContent>
                     <CardActions>
-                        <Grid container justifyContent={'right'}>
+                        <Grid container justifyContent="space-between">
+                            <Grid item>
+                                <Button disabled={loading} size="medium" variant="text" onClick={e => navigate({  pathname: '/signup'})}>Sign Up</Button>
+                            </Grid> 
                             <Grid item xs={2}>
-                                <LoadingButton loading={loading} disabled={loading} size="medium" variant="outlined" onClick={handleLoginSubmit}>Login</LoadingButton>
+                                <LoadingButton loading={loading} disabled={loading} size="medium" variant="contained" onClick={handleLoginSubmit}>Login</LoadingButton>
                             </Grid> 
                         </Grid>
                     </CardActions>
