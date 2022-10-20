@@ -33,7 +33,7 @@ function Nav({ principal, setPrincipal }) {
   }
 
   return (
-    <AppBar position="static" className="dogs-app-bar" style={{ backgroundColor: theme.palette.primary.main }}>
+    <AppBar position="fixed" className="dogs-app-bar" style={{ backgroundColor: theme.palette.primary.main }}>
       <Toolbar>
         <IconButton
           size="large"

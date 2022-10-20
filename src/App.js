@@ -97,8 +97,8 @@ function App() {
             <div className='dogs-app' style={{ backgroundColor: darkTheme.palette.background.main, color: darkTheme.palette.text.dark }}>
               <LoadingOverlay showLoadingOverlay={showLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} />
               <Nav principal={principal} setPrincipal={setPrincipal} />
-              <Container maxWidth="xl">
-                <Routes>
+              <Container maxWidth="xl" sx={{ minHeight: '100vh' }}>
+                <Routes style="min-height: 100%">
                   <Route index path="/" element={<Home />} />
                   <Route path="/users/:userId" element={<Users principal={principal} />} />
                   <Route path="/users" element={<Users principal={principal} />} />

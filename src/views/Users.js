@@ -4,7 +4,7 @@ import { UsersQuery, RemoveDogFromUserList } from '../graphql/users.gql';
 import { UserDogsQuery } from '../graphql/dogs.gql';
 import { useNavigate } from 'react-router-dom';
 import { Image } from 'mui-image'
-import { Avatar, TablePagination, Dialog, DialogActions, DialogTitle, Snackbar, Alert } from '@mui/material';
+import { Avatar, TablePagination, Dialog, DialogActions, DialogTitle, Snackbar, Alert, Grid, Toolbar, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab'
 import { getJwtFromLocalStorage } from '../security';
 import jwtDecode from 'jwt-decode';
@@ -77,53 +77,70 @@ function App({ principal }) {
   }
 
   return (
-    <div>
+    <Grid container alignItems="center" sx={{ minHeight: '100vh' }}>
+      <Toolbar sx={{ marginBottom: '20px' }} />
       {userData && userData.me && 
-      <div>
-        <div style={{ marginTop: '20px' }}>{`${userData.me.firstName} ${userData.me.lastName}`}</div>
-        <div style={{ marginTop: '10px' }}>
+      <Grid item container justifyContent={{ xs: 'center', sm: 'left' }} xs={12} rowSpacing={2}>
+        <Grid item xs={12}>
+          <Typography variant="h6" textAlign={{ xs: 'center', sm: 'left' }}>
+            {`${userData.me.firstName} ${userData.me.lastName}`}
+          </Typography>
+        </Grid>
+        <Grid item>
           <Avatar
             src={userData.me.avatarUrl}
             sx={{ width: 120, height: 120 }}
           />  
-        </div>
-      </div>
+        </Grid>
+      </Grid>
       }
-      <div style={{ marginTop: '20px' }}>Saved Dogs</div>
-      <div id="saved-dogs-container">
+      <Grid container>
+        <Grid item xs={12}>
+          <Typography variant="h6" textAlign={{ xs: 'center', sm: 'left' }} style={{ marginTop: '20px' }}>Saved Dogs</Typography>
+        </Grid>
+      </Grid>
+      <Grid container wrap="wrap" justifyContent={{xs: 'center'}} columns={4} columnSpacing={3} rowSpacing={2}>
         {dogData && dogData.myDogs && dogData.myDogs.data &&
         dogData.myDogs.data.map(dog => {
-          return <Image
-                  key={dog.id}
-                  src={dog.avatarUrl}
-                  width="329px"
-                  height="200px"
-                  fit="cover"
-                  showLoading
-                  onClick={el => handleDogClick(dog.id, userId)}
-                />
+          return (
+            <Grid item key={dog.id}>
+              <Image
+                src={dog.avatarUrl}
+                width="329px"
+                height="180px"
+                fit="cover"
+                showLoading
+                onClick={el => handleDogClick(dog.id, userId)}
+                className='dog-pic'
+              />
+            </Grid>
+                )
         })
         
       }
-      </div>
+      </Grid>
       { dogData && 
-      <table>
-        <tbody>
-          <tr>
-            <TablePagination
-              count={dogData.myDogs.totalResults}
-              page={page}
-              rowsPerPage={pageSize}
-              rowsPerPageOptions={[4, 8, 12]}
-              onPageChange={(e, page) => setPage(page)}
-              onRowsPerPageChange={(e, { props }) => {
-                setPageSize(props.value)
-                setPage(0)
-              }}
-            />
-          </tr>
-        </tbody>
-      </table>
+      <Grid container justifyContent="center">
+        <Grid item>
+          <table>
+            <tbody>
+              <tr>
+                <TablePagination
+                  count={dogData.myDogs.totalResults}
+                  page={page}
+                  rowsPerPage={pageSize}
+                  rowsPerPageOptions={[4, 8, 12]}
+                  onPageChange={(e, page) => setPage(page)}
+                  onRowsPerPageChange={(e, { props }) => {
+                    setPageSize(props.value)
+                    setPage(0)
+                  }}
+                />
+              </tr>
+            </tbody>
+          </table>
+        </Grid>
+      </Grid>
       }
 
       <Dialog
@@ -131,7 +148,7 @@ function App({ principal }) {
         onClose={e => setshowDialog(false)}
       >
         <DialogTitle>
-          Remove From Profile?
+          Remove From Personal Collection?
         </DialogTitle>
         <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
           <LoadingButton variant="contained" loading={loading} onClick={handleRemoveDogClicked} color="error">Remove</LoadingButton>
@@ -146,7 +163,7 @@ function App({ principal }) {
       >
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </div>
+    </Grid>
   );
 }
 

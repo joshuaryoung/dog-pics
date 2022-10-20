@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Button, Dialog, DialogActions, DialogTitle, Grid, Snackbar } from '@mui/material'
+import { Alert, Button, Container, Dialog, DialogActions, DialogTitle, Grid, Snackbar, Toolbar } from '@mui/material'
 import { Image } from 'mui-image'
 import { useMutation } from '@apollo/client'
 import { AddDogMutation } from '../graphql/dogs.gql'
@@ -37,7 +37,6 @@ function Dogs({ principal }) {
       fetch('https://api.thedogapi.com/v1/images/search?limit=8&order=Desc')
       .then(res => res.json())
       .then(data => {
-        console.log({ data })
         setDogsData(data)
       })
     } catch(error) {
@@ -76,10 +75,11 @@ function Dogs({ principal }) {
   }
 
   return (
-    <div>
-      <div id="dog-container">
+    <Grid container alignItems="center" sx={{ minHeight: '100vh' }}>
+      <Toolbar sx={{ marginBottom: '20px' }} />
+      <Grid container item wrap='wrap' columnSpacing={3} rowSpacing={2} justifyContent="center">
         { dogsData && dogsData.map((dog, i) => (
-        <div className="dog-pic-div" key={dog.id}>
+        <Grid item xs={'auto'} sm={'auto'} key={dog.id}>
           <Image
             onClick={e => handleDogImgClicked(i)}
             src={dog.url}
@@ -87,10 +87,11 @@ function Dogs({ principal }) {
             height="200px"
             fit="cover"
             showLoading
+            className='dog-pic'
           />
-        </div>))
+        </Grid>))
         }
-      </div>
+      </Grid>
 
       <Grid container justifyContent="center">
         <Grid item>
@@ -104,7 +105,7 @@ function Dogs({ principal }) {
         onClose={e => setShowDialog(false)}
       >
         <DialogTitle>
-          Save to Profile?
+          Save to Personal Collection?
         </DialogTitle>
         <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
           <LoadingButton variant="contained" loading={loading} onClick={handleSaveDogClicked} color="success">Save</LoadingButton>
@@ -119,7 +120,7 @@ function Dogs({ principal }) {
       >
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </div>
+    </Grid>
   );
 }
 

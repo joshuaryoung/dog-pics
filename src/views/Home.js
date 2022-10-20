@@ -1,10 +1,12 @@
 import { Container, Grid, Typography } from '@mui/material';
+import Image from 'mui-image';
 import React from 'react';
+import DogImg from '../assets/homePageDogs.png'
 
 function Home() {
   return (
-    <Container sx={{ marginTop: '70px' }}>
-      <Grid container justifyContent="center">
+    <Container sx={{ paddingTop: '70px' }}>
+      <Grid container justifyContent="center" overflow="hidden">
         <Grid xs={12} item>
           <Typography textAlign="center" variant="h3">
             Welcome to Dog Connoisseur
@@ -24,6 +26,9 @@ function Home() {
           <Typography variant="h5" textAlign="center">
             Create your account now to get started
           </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Image src={DogImg} showLoading />
         </Grid>
       </Grid>
     </Container>
