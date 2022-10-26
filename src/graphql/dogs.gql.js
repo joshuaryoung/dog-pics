@@ -13,18 +13,18 @@ query DogsQuery {
 `
 
 export const UserDogsQuery = gql`
-query GetUserDogs($idIn: Int!, $page: Int!, $pageSize: Int!) {
-  userDogs(idIn: $idIn, page: $page, pageSize: $pageSize) {
-    data{
-      id
-      avatarUrl
-      breed {
-        name
+  query GetUserDogs($page: Int!, $pageSize: Int!) {
+    myDogs(page: $page, pageSize: $pageSize) {
+      data{
+        id
+        avatarUrl
+        breed {
+          name
+        }
       }
+      totalResults
     }
-    totalResults
   }
-}
 `
 
 export const AddDogMutation = gql`

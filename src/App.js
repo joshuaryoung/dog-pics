@@ -1,21 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Home from './views/Home';
 import Nav from './components/Nav'
 import Users from './views/Users'
 import Dogs from './views/Dogs'
 import Login from './views/Login'
-import UserCreate from './views/UserCreate'
+import Signup from './views/Signup'
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import LoadingOverlay from './components/LoadingOverlay'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Container } from '@mui/system';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPHQL_URI,
-  cache: new InMemoryCache(),
-});
+import { getJwtFromLocalStorage } from './security';
+import { PrincipalQuery } from './graphql/users.gql';
 
 const darkTheme = createTheme({
   palette: {
@@ -39,15 +36,57 @@ const darkTheme = createTheme({
   },
 })
 
+export const defaultPrincipal = {
+  firstName: '',
+  lastName: '',
+  id: null
+}
+
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true)
+  const client = new ApolloClient({
+    uri: process.env.REACT_APP_GRAPHQL_URI,
+    cache: new InMemoryCache(),
+    headers: {
+      authorization: getJwtFromLocalStorage()
+    }
+  });
+
+  const [principal, setPrincipal] = useState(defaultPrincipal)
   const [showLoadingOverlay, setShowLoadingOverlay] = useState(false)
+
+  useEffect(() => {
+    async function getPrincipal() {
+      try {
+        const jwt = getJwtFromLocalStorage()
+
+        if (!jwt) {
+          return
+        }
+        const res = await client.query({ query: PrincipalQuery })
+        
+        const { data: resData } = res ?? {}
+        const { me } = resData ?? {}
+        const { firstName, lastName, id } = me ?? {}
+
+        setPrincipal(state => {
+          return {
+            id,
+            firstName,
+            lastName,
+            jwt
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getPrincipal()
+  }, [])
+
   const handleCloseLoadingOverlay = () => {
-    console.log('closeLoadingOvelay')
     setShowLoadingOverlay(false)
   }
   const handleOpenLoadingOverlay = () => {
-    console.log('handleOpenLoadingOverlay')
     setShowLoadingOverlay(true)
   }
 
@@ -58,15 +97,15 @@ function App() {
           <ThemeProvider theme={darkTheme}>
             <div className='dogs-app' style={{ backgroundColor: darkTheme.palette.background.main, color: darkTheme.palette.text.dark }}>
               <LoadingOverlay showLoadingOverlay={showLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} />
-              <Nav isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-              <Container maxWidth="xl">
-                <Routes>
+              <Nav principal={principal} setPrincipal={setPrincipal} />
+              <Container maxWidth="xl" sx={{ minHeight: '100vh' }}>
+                <Routes style="min-height: 100%">
                   <Route index path="/" element={<Home />} />
-                  <Route path="/users/:userId" element={<Users />} />
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/user-create" element={<UserCreate />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/dogs" element={<Dogs handleOpenLoadingOverlay={handleOpenLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} />} />
+                  <Route path="/users/:userId" element={<Users principal={principal} />} />
+                  <Route path="/users" element={<Users principal={principal} />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/login" element={<Login principal={principal} setPrincipal={setPrincipal} />} />
+                  <Route path="/dogs" element={<Dogs handleOpenLoadingOverlay={handleOpenLoadingOverlay} handleCloseLoadingOverlay={handleCloseLoadingOverlay} principal={principal} />} />
                 </Routes>
               </Container>
             </div>

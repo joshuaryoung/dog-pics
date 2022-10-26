@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Button, Dialog, DialogActions, DialogTitle, Snackbar } from '@mui/material'
+import { Alert, Button, Container, Dialog, DialogActions, DialogTitle, Grid, Snackbar, Toolbar } from '@mui/material'
 import { Image } from 'mui-image'
 import { useMutation } from '@apollo/client'
 import { AddDogMutation } from '../graphql/dogs.gql'
 import { useTheme } from '@mui/system'
 import { LoadingButton } from '@mui/lab'
+import { useNavigate } from 'react-router-dom'
 
-function Dogs() {
+function Dogs({ principal }) {
+  console.log({ principal })
+  const navigate = useNavigate()
   const theme = useTheme()
   const [addDog, { loading, error: mutationError }] = useMutation(AddDogMutation)
   const [dogsData, setDogsData] = useState()
@@ -32,7 +35,7 @@ function Dogs() {
 
   const fetchDogs = () => {
     try {
-      fetch('https://api.thedogapi.com/v1/images/search?limit=12&order=Desc')
+      fetch('https://api.thedogapi.com/v1/images/search?limit=8&order=Desc')
       .then(res => res.json())
       .then(data => {
         setDogsData(data)
@@ -56,12 +59,16 @@ function Dogs() {
   }
 
   const handleSaveDogClicked = async e => {
+    if (!(principal && principal.jwt)) {
+      navigate({ pathname: '/login' })
+    }
+  
     const dogIn = {
       id: selectedDog.id,
       breed: selectedDog.breed,
       avatarUrl: selectedDog.url
     }
-    await addDog({ variables: { dogIn, userIdIn: 1000 } })
+    await addDog({ variables: { dogIn, userIdIn: principal.id } })
     setSnackbarMessage('Dog successfully added!')
     setSnackbarSeverity('success')
     setShowSnackbar(true)
@@ -69,11 +76,11 @@ function Dogs() {
   }
 
   return (
-    <div>
-      <Button variant="contained" className="dog-refresh-button" style={{marginTop: '20px', backgroundColor: theme.palette.primary.dark }} onClick={handleRefreshClick}>Refresh</Button>
-      <div id="dog-container">
+    <Grid container alignItems="center" sx={{ minHeight: '100vh' }}>
+      <Toolbar sx={{ marginBottom: '20px' }} />
+      <Grid container item wrap='wrap' columnSpacing={3} rowSpacing={2} justifyContent="center">
         { dogsData && dogsData.map((dog, i) => (
-        <div className="dog-pic-div" key={dog.id}>
+        <Grid item xs={'auto'} sm={'auto'} key={dog.id}>
           <Image
             onClick={e => handleDogImgClicked(i)}
             src={dog.url}
@@ -81,17 +88,25 @@ function Dogs() {
             height="200px"
             fit="cover"
             showLoading
+            className='dog-pic'
           />
-        </div>))
+        </Grid>))
         }
-      </div>
+      </Grid>
+
+      <Grid container justifyContent="center">
+        <Grid item>
+          <Button variant="contained" className="dog-refresh-button" style={{marginTop: '20px', backgroundColor: theme.palette.primary.dark }} onClick={handleRefreshClick}>Refresh</Button>
+        </Grid>
+      </Grid>
+      
 
       <Dialog
         open={showDialog}
         onClose={e => setShowDialog(false)}
       >
         <DialogTitle>
-          Save to Profile?
+          Save to Personal Collection?
         </DialogTitle>
         <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
           <LoadingButton variant="contained" loading={loading} onClick={handleSaveDogClicked} color="success">Save</LoadingButton>
@@ -106,7 +121,7 @@ function Dogs() {
       >
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </div>
+    </Grid>
   );
 }
 
