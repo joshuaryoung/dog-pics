@@ -8,7 +8,6 @@ import { LoadingButton } from '@mui/lab'
 import { useNavigate } from 'react-router-dom'
 
 function Dogs({ principal }) {
-  console.log({ principal })
   const navigate = useNavigate()
   const theme = useTheme()
   const [addDog, { loading, error: mutationError }] = useMutation(AddDogMutation)
