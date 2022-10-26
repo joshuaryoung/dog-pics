@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client"
 import { LoadingButton } from "@mui/lab"
-import { Card, CardActions, Grid, TextField, CardHeader, CardContent, Box, Snackbar, Alert } from "@mui/material"
+import { Card, CardActions, Grid, TextField, CardHeader, CardContent, Box, Snackbar, Alert, Toolbar } from "@mui/material"
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { CreateUserMutation } from "../graphql/users.gql"
@@ -33,6 +33,7 @@ function Signup () {
 
     return (
         <Grid container spacing={2} justifyContent="center" sx={{ marginTop: '20px'}}>
+            <Toolbar />
             <Grid item xs={12} sm={5}>
                 <Card>
                     <CardHeader title="Sign Up" />

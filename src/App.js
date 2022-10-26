@@ -72,7 +72,8 @@ function App() {
           return {
             id,
             firstName,
-            lastName
+            lastName,
+            jwt
           }
         })
       } catch (error) {
